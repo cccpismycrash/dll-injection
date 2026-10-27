@@ -74,30 +74,43 @@ int main(int argc, char* argv[]) {
     HANDLE hProcess = NULL,
         hThread = NULL;
 
-    WCHAR pcFilename[MAX_PATH * 2];
-    if (!GetModuleFileNameW(
-        NULL,
-        (LPWSTR)&pcFilename,
-        MAX_PATH * 2
-    )) {
-        printf("[!] GetModuleFileNameW Failed With Error : %d \n", GetLastError());
-        return -1;
+    PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY lpBuffer = { 0 };
+
+    GetProcessMitigationPolicy(
+        GetCurrentProcess(),
+        ProcessSignaturePolicy,
+        &lpBuffer,
+        sizeof(lpBuffer)
+    );
+
+    if (lpBuffer.MicrosoftSignedOnly == 1) {
+        printf("[+] Process Is Now Protected With The Block Dll Policy \n");
+    } else {
+        WCHAR pcFilename[MAX_PATH * 2];
+        if (!GetModuleFileNameW(
+            NULL,
+            (LPWSTR)&pcFilename,
+            MAX_PATH * 2
+        )) {
+            printf("[!] GetModuleFileNameW Failed With Error : %d \n", GetLastError());
+            return -1;
+        }
+
+        DWORD dwBufferSize = (DWORD)(lstrlenW(pcFilename) + 0xFF);
+        WCHAR* pcBuffer = (WCHAR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwBufferSize);
+        if (!pcBuffer) return -1;
+
+        swprintf_s(pcBuffer, dwBufferSize, L"%s", pcFilename);
+        if (!CreateProcessWithBlockDllPolicy(
+            pcBuffer,
+            &dwProcessId,
+            &hProcess,
+            &hThread        
+        )) {
+            return -1;
+        }
+
+        HeapFree(GetProcessHeap(), 0, pcBuffer);
+        printf("[i] Process Created With PID %d \n", dwProcessId);
     }
-
-    DWORD dwBufferSize = (DWORD)(lstrlenW(pcFilename) + 0xFF);
-    WCHAR* pcBuffer = (WCHAR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwBufferSize);
-    if (!pcBuffer) return -1;
-
-    swprintf_s(pcBuffer, dwBufferSize, L"%s", pcFilename);
-    if (!CreateProcessWithBlockDllPolicy(
-        pcBuffer,
-        &dwProcessId,
-        &hProcess,
-        &hThread        
-    )) {
-        return -1;
-    }
-
-    HeapFree(GetProcessHeap(), 0, pcBuffer);
-    printf("[i] Process Created With PID %d \n", dwProcessId);
 }
