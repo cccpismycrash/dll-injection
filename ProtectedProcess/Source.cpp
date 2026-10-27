@@ -53,4 +53,11 @@ BOOL WINAPI CreateProcessWithBlockDllPolicy(
             printf("[!] CreateProcessW Failed With Error : %d \n", GetLastError());
             return FALSE;
     }
+
+    *dwProcessId = Pi.dwProcessId;
+    *hProcess = Pi.hProcess;
+    *hThread = Pi.hThread;
+
+    DeleteProcThreadAttributeList(pAttrBuf);
+    HeapFree(GetProcessHeap(), 0, pAttrBuf);
 }
