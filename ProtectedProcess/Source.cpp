@@ -60,4 +60,11 @@ BOOL WINAPI CreateProcessWithBlockDllPolicy(
 
     DeleteProcThreadAttributeList(pAttrBuf);
     HeapFree(GetProcessHeap(), 0, pAttrBuf);
+
+    if (
+        *dwProcessId != NULL &&
+        *hProcess != NULL &&
+        *hThread != NULL
+    ) return TRUE;
+    else return FALSE;
 }
