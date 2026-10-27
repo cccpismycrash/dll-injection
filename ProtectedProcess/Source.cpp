@@ -97,4 +97,7 @@ int main(int argc, char* argv[]) {
     )) {
         return -1;
     }
+
+    HeapFree(GetProcessHeap(), 0, pcBuffer);
+    printf("[i] Process Created With PID %d \n", dwProcessId);
 }
