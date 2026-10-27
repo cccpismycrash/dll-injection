@@ -83,4 +83,8 @@ int main(int argc, char* argv[]) {
         printf("[!] GetModuleFileNameW Failed With Error : %d \n", GetLastError());
         return -1;
     }
+
+    DWORD dwBufferSize = (DWORD)(lstrlenW(pcFilename) + 0xFF);
+    WCHAR* pcBuffer = (WCHAR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwBufferSize);
+    if (!pcBuffer) return -1;
 }
