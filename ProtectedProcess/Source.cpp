@@ -87,4 +87,14 @@ int main(int argc, char* argv[]) {
     DWORD dwBufferSize = (DWORD)(lstrlenW(pcFilename) + 0xFF);
     WCHAR* pcBuffer = (WCHAR*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwBufferSize);
     if (!pcBuffer) return -1;
+
+    swprintf_s(pcBuffer, dwBufferSize, L"%s", pcFilename);
+    if (!CreateProcessWithBlockDllPolicy(
+        pcBuffer,
+        &dwProcessId,
+        &hProcess,
+        &hThread        
+    )) {
+        return -1;
+    }
 }
