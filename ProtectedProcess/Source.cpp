@@ -70,5 +70,17 @@ BOOL WINAPI CreateProcessWithBlockDllPolicy(
 }
 
 int main(int argc, char* argv[]) {
-    
+    DWORD dwProcessId = NULL;
+    HANDLE hProcess = NULL,
+        hThread = NULL;
+
+    WCHAR pcFilename[MAX_PATH * 2];
+    if (!GetModuleFileNameW(
+        NULL,
+        (LPWSTR)&pcFilename,
+        MAX_PATH * 2
+    )) {
+        printf("[!] GetModuleFileNameW Failed With Error : %d \n", GetLastError());
+        return -1;
+    }
 }
