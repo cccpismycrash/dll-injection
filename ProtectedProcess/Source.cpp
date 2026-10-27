@@ -24,4 +24,19 @@ BOOL WINAPI CreateProcessWithBlockDllPolicy(
         printf("[!] InitializeProcThreadAttributeList Failed With Error : %d \n", GetLastError());
         return false;
     }
+
+    DWORD64 dwPolicy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
+    if (!UpdateProcThreadAttribute(
+        pAttrBuf, 
+        NULL, 
+        PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY, 
+        &dwPolicy, 
+        sizeof(DWORD64), 
+        NULL, 
+        NULL)
+    ) {
+        printf("[!] UpdateProcThreadAttribute Failed With Error : %d \n", GetLastError());
+        return false;
+    }
+    SiEx.lpAttributeList = (LPPROC_THREAD_ATTRIBUTE_LIST)pAttrBuf;
 }
