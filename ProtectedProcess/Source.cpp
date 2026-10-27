@@ -85,6 +85,15 @@ int main(int argc, char* argv[]) {
 
     if (lpBuffer.MicrosoftSignedOnly == 1) {
         printf("[+] Process Is Now Protected With The Block Dll Policy \n");
+
+        int i = 0;
+        while (true)
+        {
+            printf("Processing - %d\n", i++);
+            Sleep(1000);
+        }
+        return 0;
+
     } else {
         WCHAR pcFilename[MAX_PATH * 2];
         if (!GetModuleFileNameW(
