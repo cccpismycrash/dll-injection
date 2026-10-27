@@ -68,3 +68,7 @@ BOOL WINAPI CreateProcessWithBlockDllPolicy(
     ) return TRUE;
     else return FALSE;
 }
+
+int main(int argc, char* argv[]) {
+    
+}
