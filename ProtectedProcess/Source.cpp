@@ -15,5 +15,13 @@ BOOL WINAPI CreateProcessWithBlockDllPolicy(
     RtlSecureZeroMemory(&SiEx, sizeof(STARTUPINFOEXA));
     RtlSecureZeroMemory(&Pi, sizeof(PROCESS_INFORMATION));
     SiEx.StartupInfo.cb = sizeof(STARTUPINFOEXA);
-    SiEx.StartupInfo.dwFlags = EXTENDED_STARTUPINFO_PRESENT; 
+    SiEx.StartupInfo.dwFlags = EXTENDED_STARTUPINFO_PRESENT;
+
+    InitializeProcThreadAttributeList(NULL, 1, NULL, &sAttrSize); // записываем в sAttrSize размер атрибутов в байтах    
+    LPPROC_THREAD_ATTRIBUTE_LIST pAttrBuf = 
+        (LPPROC_THREAD_ATTRIBUTE_LIST)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sAttrSize); // выделяем память на куче
+    if (!InitializeProcThreadAttributeList(pAttrBuf, 1, NULL, &sAttrSize)) {
+        printf("[!] InitializeProcThreadAttributeList Failed With Error : %d \n", GetLastError());
+        return false;
+    }
 }
