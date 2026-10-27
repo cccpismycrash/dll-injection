@@ -3,12 +3,12 @@
 #include <stdio.h>
 
 BOOL WINAPI CreateProcessWithBlockDllPolicy(
-    IN LPSTR lpProcessPath, 
+    IN LPWSTR lpProcessPath, 
     OUT DWORD* dwProcessId, 
     OUT HANDLE* hProcess,
     OUT HANDLE* hThread
 ) {
-    STARTUPINFOEXA SiEx = { 0 };
+    STARTUPINFOEXW SiEx = { 0 };
     PROCESS_INFORMATION Pi = { 0 };
     SIZE_T sAttrSize = NULL;
     if (lpProcessPath == NULL) return false;
@@ -22,7 +22,7 @@ BOOL WINAPI CreateProcessWithBlockDllPolicy(
         (LPPROC_THREAD_ATTRIBUTE_LIST)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sAttrSize); // выделяем память на куче
     if (!InitializeProcThreadAttributeList(pAttrBuf, 1, NULL, &sAttrSize)) {
         printf("[!] InitializeProcThreadAttributeList Failed With Error : %d \n", GetLastError());
-        return false;
+        return FALSE;
     }
 
     DWORD64 dwPolicy = PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
@@ -33,10 +33,24 @@ BOOL WINAPI CreateProcessWithBlockDllPolicy(
         &dwPolicy, 
         sizeof(DWORD64), 
         NULL, 
-        NULL)
-    ) {
+        NULL)) {
         printf("[!] UpdateProcThreadAttribute Failed With Error : %d \n", GetLastError());
-        return false;
+        return FALSE;
     }
     SiEx.lpAttributeList = (LPPROC_THREAD_ATTRIBUTE_LIST)pAttrBuf;
+
+    if (!CreateProcessW(
+        NULL,
+        lpProcessPath,
+        NULL,
+        NULL,
+        FALSE,
+        EXTENDED_STARTUPINFO_PRESENT,
+        NULL,
+        NULL,
+        &SiEx.StartupInfo,
+        &Pi)) {
+            printf("[!] CreateProcessW Failed With Error : %d \n", GetLastError());
+            return FALSE;
+    }
 }
